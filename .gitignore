@@ -1,0 +1,11 @@
+*.class
+*.logs
+*.jar
+*.bak
+.idea
+.gradle
+.settings
+build
+target 
+.classpath
+.project 
