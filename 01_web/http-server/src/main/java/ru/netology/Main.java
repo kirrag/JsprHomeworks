@@ -1,5 +1,7 @@
 package ru.netology;
 
+import java.io.IOException;
+
 /*
 import java.io.*;
 import java.net.ServerSocket;
@@ -10,9 +12,9 @@ import java.util.List;
 */
 
 public class Main {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException{
 		HTTPServer server = HTTPServer.getInstance();
-		server.start();
+		server.run();
 			
   }
 }
