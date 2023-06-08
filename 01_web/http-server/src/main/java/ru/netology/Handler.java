@@ -1,16 +1,18 @@
 package ru.netology;
 
-import java.io.*;
-import java.net.ServerSocket;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.BufferedOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import java.net.Socket;
 
 class Handler implements Runnable {
 	private final Socket socket;
+	private static final List validPaths = List.of("/index.html", "/spring.svg", "/spring.png", "/resources.html", "/styles.css", "/app.js", "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
 
 	Handler(Socket socket) {
 		this.socket = socket;
@@ -19,11 +21,9 @@ class Handler implements Runnable {
 	public void run() {
 		// read and service request on Socket
 		try (
-				final var in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-				final var out = new BufferedOutputStream(this.socket.getOutputStream());) {
-			final var validPaths = List.of("/index.html", "/spring.svg", "/spring.png", "/resources.html",
-					"/styles.css",
-					"/app.js", "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
+			final var in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+			final var out = new BufferedOutputStream(this.socket.getOutputStream())
+		;) {
 			// read only request line for simplicity
 			// must be in form GET /path HTTP/1.1
 			final var requestLine = in.readLine();
@@ -32,6 +32,7 @@ class Handler implements Runnable {
 			if (parts.length != 3) {
 				// just close socket
 				// continue;
+				socket.close();
 			}
 
 			final var path = parts[1];
@@ -42,6 +43,7 @@ class Handler implements Runnable {
 						"\r\n").getBytes());
 				out.flush();
 				// continue;
+				socket.close();
 			}
 
 			final var filePath = Path.of(".", "public", path);
@@ -61,6 +63,7 @@ class Handler implements Runnable {
 				out.write(content);
 				out.flush();
 				// continue;
+				socket.close();
 			}
 
 			final var length = Files.size(filePath);
