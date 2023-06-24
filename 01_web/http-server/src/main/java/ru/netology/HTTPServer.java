@@ -45,10 +45,10 @@ public class HTTPServer implements Runnable {
 		}
 	}
 
-	public void	addHandler(String method, String path, Handler handler) {
+	public void addHandler(String method, String path, Handler handler) {
 		var methodMap = handlers.get(method);
 
-		if (methodMap == null)  {
+		if (methodMap == null) {
 			methodMap = new ConcurrentHashMap<>();
 			handlers.put(method, methodMap);
 		}

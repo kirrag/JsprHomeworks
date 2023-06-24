@@ -1,10 +1,10 @@
 package ru.netology;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.net.Socket;
+import java.net.URISyntaxException;
 
 class ConnectionHandler implements Runnable {
 	private final Socket socket;
@@ -19,11 +19,14 @@ class ConnectionHandler implements Runnable {
 	public void run() {
 		// read and service request on Socket
 		try (
-			final var in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-			final var out = new BufferedOutputStream(this.socket.getOutputStream());) {
+				final var in = new BufferedInputStream(this.socket.getInputStream());
+				final var out = new BufferedOutputStream(this.socket.getOutputStream());) {
 			// read only request line for simplicity
 			// must be in form GET /path HTTP/1.1
-			final var request = Request.parse(in);
+			// final var request = Request.parse(in);
+			Request request = new Request(in);
+
+			request.getQueryParams().forEach(System.out::println);
 
 			if (request == null) {
 				out.write(("HTTP/1.1 400 Bad Request\r\n" +
@@ -57,7 +60,7 @@ class ConnectionHandler implements Runnable {
 
 			handler.handle(request, out);
 
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
 	}
